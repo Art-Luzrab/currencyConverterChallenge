@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 
 export default function App() {
-  const [input, setInput] = useState("100");
+  const [input, setInput] = useState(1);
   const [from, setFrom] = useState("EUR");
   const [to, setTo] = useState("USD");
   const [output, setOutput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleInput(e) {
     setInput(e.target.value);
@@ -25,6 +26,7 @@ export default function App() {
   useEffect(
     function () {
       async function fetchCurrencies() {
+        setIsLoading(true);
         const res = await fetch(
           `https://api.frankfurter.app/latest?amount=${input}&from=${from}&to=${to}`
         );
@@ -41,6 +43,7 @@ export default function App() {
       }
 
       fetchCurrencies();
+      setIsLoading(false);
     },
     [input, from, to]
   );
@@ -48,20 +51,27 @@ export default function App() {
   console.log(input, from, to);
   return (
     <div>
-      <input value={input} onChange={handleInput} type="number" />
-      <select value={from} onChange={handleFromChange}>
+      <input
+        value={input}
+        onChange={handleInput}
+        type="number"
+        disabled={isLoading}
+      />
+      <select value={from} onChange={handleFromChange} disabled={isLoading}>
         <option value="USD">USD</option>
         <option value="EUR">EUR</option>
         <option value="CAD">CAD</option>
         <option value="INR">INR</option>
       </select>
-      <select value={to} onChange={handleToChange}>
+      <select value={to} onChange={handleToChange} disabled={isLoading}>
         <option value="USD">USD</option>
         <option value="EUR">EUR</option>
         <option value="CAD">CAD</option>
         <option value="INR">INR</option>
       </select>
-      <p>{output}</p>
+      <p>
+        {output} {to}
+      </p>
     </div>
   );
 }
